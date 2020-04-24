@@ -26,10 +26,21 @@ To build:
 
    path/to/h5cc -o reader reader.c
 
+NOTE: It helps to build the HDF5 library with the memory sanity checks disabled
+and with the "using memchecker" option turned on (this disables the free
+lists).
+
+In the autotools, these options are --enable-using-memchecker and
+--disable-memory-alloc-sanity-check. I personally build in production mode
+with the debug level set to -Og (--enable-optimization=debug).
+
+You don't need to build with profiling turned on. Callgrind doesn't need it.
+
+
 To profile:
 
-   valgrind --tool=callgrind ./reader
+   valgrind --tool=callgrind --instr-atstart=no ./reader
 
 This will create a file with the name callgrind.out.####. Load that in
-kcachegrind to see the call graph.
-   
+kcachegrind to see the call graph. The --instr-atstart=no option ensures
+that we only profile the H5Dread() call.

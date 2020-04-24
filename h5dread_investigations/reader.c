@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
     hid_t fid = H5I_INVALID_HID;
     hid_t did = H5I_INVALID_HID;
     uint64_t *data = NULL;
+    herr_t err;
 
     if (argc != 2) {
         fprintf(stderr, "Please specify the file name on the command line.\n");
@@ -26,9 +27,11 @@ int main(int argc, char *argv[])
         goto badness;
 
     CALLGRIND_START_INSTRUMENTATION;
-    if (H5Dread(did, H5T_STD_I64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, data) < 0)
-        goto badness;
+    err = H5Dread(did, H5T_STD_I64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
     CALLGRIND_STOP_INSTRUMENTATION;
+
+    if (err < 0)
+        goto badness;
 
     if (H5Fclose(fid) < 0)
         goto badness;
